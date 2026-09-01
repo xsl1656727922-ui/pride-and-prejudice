@@ -653,6 +653,8 @@ body {
   font-family: 'Noto Sans SC', sans-serif; letter-spacing: 0.1em;
   position: relative; z-index: 1;
 }
+
+
 /* ===== SEPARATOR ===== */
 .sep { text-align: center; padding: 4rem 0; color: var(--ink-light); font-size: 0.8rem; opacity: 0.3; }
 
@@ -712,6 +714,14 @@ body {
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
 .stagger-item.visible { opacity: 1; transform: translateY(0); }
+
+/* ===== TABLET ===== */
+@media (max-width: 1024px) {
+  .dual { grid-template-columns: 1fr; margin: 3rem 0; }
+  .visual-break img, .chapter-atmos img {
+    mask-image: none; -webkit-mask-image: none;
+  }
+}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
