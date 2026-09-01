@@ -331,12 +331,12 @@ body {
   margin: 3.5rem -2rem; perspective: 1200px;
 }
 .dual-card {
-  min-height: 280px; cursor: pointer; position: relative;
+  cursor: pointer; position: relative;
   transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .dual-card.flipped { transform: rotateY(180deg); }
 .dual-face {
-  position: absolute; inset: 0; backface-visibility: hidden;
+  position: relative; backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   padding: 2.5rem 2rem; border-radius: 8px;
   display: flex; flex-direction: column; justify-content: center;
@@ -354,6 +354,7 @@ body {
   font-size: 0.85rem; color: var(--accent-light); letter-spacing: 0.1em;
 }
 .dual-back {
+  position: absolute; inset: 0;
   background: linear-gradient(160deg, #16213e, #0f3460);
   border: 1px solid rgba(201, 169, 110, 0.15);
   transform: rotateY(180deg);
@@ -668,8 +669,6 @@ body {
   width: 100%; height: 100%; object-fit: cover;
   filter: saturate(0.6) brightness(0.92);
   display: block;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
 }
 
 /* ===== ATMOSPHERIC IMAGES ===== */
@@ -690,8 +689,6 @@ body {
   width: 100%; height: 100%; object-fit: cover;
   filter: saturate(0.5) brightness(0.9);
   display: block;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
 }
 .scene-atmos {
   position: absolute; inset: 0; z-index: 0; overflow: hidden;
@@ -718,9 +715,6 @@ body {
 /* ===== TABLET ===== */
 @media (max-width: 1024px) {
   .dual { grid-template-columns: 1fr; margin: 3rem 0; }
-  .visual-break img, .chapter-atmos img {
-    mask-image: none; -webkit-mask-image: none;
-  }
 }
 
 /* ===== RESPONSIVE ===== */
@@ -788,7 +782,7 @@ body {
 <!-- ==================== OPENING ==================== -->
 <section class="opening">
   <div class="opening-particles" id="openingParticles"></div>
-  <div class="opening-atmos"><img src="vibe_images/regency-ballroom_1788256745.png" alt=""></div>
+  <div class="opening-atmos"><img src="vibe_images/regency-ballroom_1788256745.jpg" alt=""></div>
   <div class="opening-glow"></div>
   <div class="opening-label">读 后 随 笔</div>
   <div class="en-title">Pride &amp; Prejudice · Jane Austen · 1813</div>
@@ -845,7 +839,7 @@ body {
 
   <p>故事从这里就开始了——不是从爱情开始，而是从<strong>伤害</strong>开始。</p>
 
-  <div class="visual-break"><img src="vibe_images/regency-ballroom_1788256745.png" alt=""></div>
+  <div class="visual-break"><img src="vibe_images/regency-ballroom_1788256745.jpg" alt=""></div>
 </section>
 
 
@@ -876,7 +870,7 @@ body {
     <p>伊丽莎白让我害怕的地方不是她犯了错，而是她犯错时的那种笃定。那种"我一看就知道"的自信——恰恰是偏见最危险的伪装。</p>
   </div>
 
-  <div class="visual-break"><img src="vibe_images/regency-woman-portrait_1788257655.png" alt=""></div>
+  <div class="visual-break"><img src="vibe_images/regency-woman-portrait_1788257655.jpg" alt=""></div>
 </section>
 
 
@@ -923,7 +917,7 @@ body {
     <p>达西的"傲慢"，其实是一种保护色。他从小被教导要与人保持距离，久而久之，距离就变成了别人眼中的傲慢。我们生活中有多少"达西"，不是看不起你，而是不知道怎么走向你？</p>
   </div>
 
-  <div class="visual-break"><img src="vibe_images/regency-gentleman_1788257670.png" alt=""></div>
+  <div class="visual-break"><img src="vibe_images/regency-gentleman_1788257670.jpg" alt=""></div>
 </section>
 
 
@@ -945,7 +939,7 @@ body {
     <cite>— 达西致伊丽莎白</cite>
   </div>
 
-  <div class="chapter-atmos"><img src="vibe_images/letter-quill_1788256761.png" alt=""></div>
+  <div class="chapter-atmos"><img src="vibe_images/letter-quill_1788256761.jpg" alt=""></div>
 
   <p>但真正改变一切的，是后来那封信。信里，他一条一条地解释了真相。韦翰是个骗子。他承认自己确实傲慢，也承认自己拆散了简和宾利的姻缘。这封信没有姿态，只有证据和认错。</p>
 
@@ -977,7 +971,7 @@ body {
 
   <p>伊丽莎白辗转知道真相的那一刻，彻底震惊了：那个她骂了半本书的"傲慢的人"，在她全家最不堪的时候，做了最善良、最体面、也最不邀功的事。</p>
 
-  <div class="visual-break"><img src="vibe_images/english-estate_1788256785.png" alt=""></div>
+  <div class="visual-break"><img src="vibe_images/english-estate_1788256785.jpg" alt=""></div>
 
   <div class="scene">
     <div class="scene-label">彭伯里</div>
@@ -1257,6 +1251,20 @@ document.querySelectorAll('.fade-up, .stagger-item').forEach(el => fadeObserver.
 document.querySelectorAll('.life-grid .stagger-item, .questions .stagger-item').forEach((el, i) => {
   el.style.transitionDelay = (i * 0.12) + 's';
 });
+
+/* ===== DUAL CARD HEIGHT SYNC ===== */
+function syncDualHeights() {
+  document.querySelectorAll('.dual-card').forEach(card => {
+    const front = card.querySelector('.dual-front');
+    const back = card.querySelector('.dual-back');
+    if (!front || !back) return;
+    const backH = back.scrollHeight;
+    const frontH = front.scrollHeight;
+    front.style.minHeight = Math.max(backH, frontH) + 'px';
+  });
+}
+syncDualHeights();
+window.addEventListener('resize', syncDualHeights);
 
 /* ===== VOICE CARD FLIP ===== */
 function getFrontCard() {
