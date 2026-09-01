@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>傲慢与偏见 — 一部关于「如何看人」的书</title>
+<meta name="description" content="以叙事、分析与角色独白交织的方式，重读《傲慢与偏见》：第一印象、沟通、观人、自尊与成长。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1a2e;
+  --ink-soft: #2d2d44;
+  --ink-muted: #6b7b8d;
+  --ink-light: #8e9bab;
+  --paper: #faf8f2;
+  --paper-warm: #f0ece0;
+  --accent: #c9a96e;
+  --accent-light: #e8d5a8;
+  --accent-glow: #f0d78c;
+  --accent-bg: rgba(201, 169, 110, 0.06);
+  --rose: #c4727f;
+  --rose-bg: rgba(196, 114, 127, 0.06);
+  --divider: rgba(201, 169, 110, 0.15);
+  --navy: #1a1a2e;
+  --navy-mid: #16213e;
+  --navy-deep: #0f3460;
+  --navy-purple: #1e1b4b;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg-light: rgba(255, 255, 255, 0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Serif SC', 'Songti SC', serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 2;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection { background: rgba(201, 169, 110, 0.28); color: var(--ink); }
+
+/* ===== GRAIN TEXTURE ===== */
+.grain-overlay {
+  position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress {
+  position: fixed; top: 0; left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+  z-index: 9999; width: 0%; transition: width 0.15s;
+  box-shadow: 0 0 8px rgba(201, 169, 110, 0.4);
+}
+
+/* ===== CHAPTER NAV ===== */
+.chapter-nav {
+  position: fixed; right: 2rem; top: 50%; transform: translateY(-50%);
+  z-index: 100; display: flex; flex-direction: column; gap: 14px; align-items: center;
+}
+.chapter-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--ink-light); opacity: 0.25;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; position: relative;
+}
+.chapter-dot::before {
+  content: ''; position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 20px; height: 1px; background: var(--accent); opacity: 0;
+  transition: opacity 0.3s;
+}
+.chapter-dot.active { opacity: 1; background: var(--accent); width: 6px; height: 6px;
+  box-shadow: 0 0 6px rgba(201, 169, 110, 0.4); }
+.chapter-dot .tooltip {
+  position: absolute; right: 24px; top: 50%; transform: translateY(-50%);
+  background: rgba(26, 26, 46, 0.9); color: #fff; padding: 4px 12px; border-radius: 6px;
+  font-size: 11px; font-family: 'Noto Sans SC', sans-serif; font-weight: 400;
+  white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.06);
+}
+.chapter-dot:hover .tooltip { opacity: 1; }
+
+/* ===== TOP NAV ===== */
+.top-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  padding: 0 2rem; height: 48px;
+  background: rgba(250, 248, 242, 0.82);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border-bottom: 1px solid rgba(201, 169, 110, 0.1);
+  transform: translateY(-100%); opacity: 0;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.45s ease;
+  pointer-events: none;
+}
+.top-nav.visible { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.top-nav a {
+  font-family: 'Noto Sans SC', sans-serif; font-size: 12px; font-weight: 400;
+  color: var(--ink-muted); text-decoration: none; padding: 6px 14px;
+  border-radius: 20px; transition: all 0.3s ease; letter-spacing: 0.02em;
+  white-space: nowrap; position: relative;
+}
+.top-nav a:hover { color: var(--ink); background: rgba(201, 169, 110, 0.08); }
+.top-nav a.active { color: var(--accent); background: rgba(201, 169, 110, 0.1); font-weight: 500; }
+
+/* ===== OPENING ===== */
+.opening {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  padding: 4rem 2rem; position: relative; overflow: hidden;
+  background: linear-gradient(170deg, #0a0a1a 0%, #1a1a2e 20%, #16213e 40%, #0f3460 60%, #1a3a5c 75%, #2a5a7c 85%, #4a7a9a 92%, #8a9aaa 96%, var(--paper) 100%);
+  color: #fff;
+}
+.opening-particles {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+}
+.particle {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,169,110,0.3), transparent 70%);
+  animation: particleFloat linear infinite;
+}
+@keyframes particleFloat {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+.opening-glow {
+  position: absolute; width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,169,110,0.06), transparent 70%);
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  animation: glowPulse 6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes glowPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+}
+.opening-label {
+  font-family: 'Noto Sans SC', sans-serif; font-size: 0.72rem;
+  letter-spacing: 0.35em; color: var(--accent-light); margin-bottom: 2rem; font-weight: 400;
+  opacity: 0; animation: fadeSlideUp 1s 0.3s ease forwards;
+}
+.opening .en-title {
+  font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 400;
+  font-size: clamp(1rem, 2vw, 1.3rem); color: rgba(255,255,255,0.3);
+  letter-spacing: 0.12em; margin-bottom: 3rem;
+  opacity: 0; animation: fadeSlideUp 1s 0.6s ease forwards;
+}
+.opening h1 {
+  font-size: clamp(2.2rem, 5.5vw, 3.8rem); font-weight: 900;
+  line-height: 1.4; margin-bottom: 1.5rem; letter-spacing: 0.1em;
+  opacity: 0; animation: fadeSlideUp 1.2s 0.9s ease forwards;
+  text-shadow: 0 0 80px rgba(201, 169, 110, 0.15);
+}
+.opening-sub {
+  font-size: 1.05rem; color: rgba(255,255,255,0.4);
+  max-width: 420px; line-height: 2.2; font-weight: 400;
+  opacity: 0; animation: fadeSlideUp 1s 1.4s ease forwards;
+}
+.opening-note {
+  font-size: 0.82rem; color: rgba(255,255,255,0.25);
+  max-width: 360px; line-height: 2; font-weight: 400;
+  margin-top: 2.5rem; font-family: 'Noto Sans SC', sans-serif;
+  opacity: 0; animation: fadeSlideUp 1s 2s ease forwards;
+}
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== NARRATIVE BODY ===== */
+.narrative { max-width: 680px; margin: 0 auto; padding: 0 2rem; }
+
+/* ===== CHAPTER ===== */
+.chapter {
+  padding: 8rem 0 4rem; position: relative;
+}
+.chapter-num-bg {
+  position: absolute; top: 6rem; left: -1rem;
+  font-family: 'Noto Serif SC', serif; font-size: clamp(6rem, 12vw, 10rem);
+  font-weight: 900; color: rgba(201, 169, 110, 0.09);
+  line-height: 1; pointer-events: none; user-select: none;
+  z-index: 0;
+  animation: chapterBreath 5s ease-in-out infinite;
+}
+@keyframes chapterBreath {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+.chapter-num {
+  display: none;
+}
+.chapter-title {
+  font-size: clamp(1.6rem, 3.8vw, 2.4rem); font-weight: 900;
+  line-height: 1.4; margin-bottom: 3rem; color: var(--ink); letter-spacing: 0.04em;
+  position: relative; z-index: 1;
+}
+.narrative p {
+  margin-bottom: 1.8rem; color: var(--ink-soft); font-size: 1.05rem; text-align: justify;
+  position: relative; z-index: 1;
+}
+.narrative p.lead {
+  font-size: 1.2rem; color: var(--ink); line-height: 2.2;
+  padding-left: 1.5rem; border-left: 2px solid var(--accent);
+}
+.narrative p b, .narrative p strong { color: var(--ink); font-weight: 600; }
+
+/* ===== TRANSITION QUOTE ===== */
+.transition-quote {
+  text-align: center; padding: 5rem 2rem; position: relative;
+}
+.transition-quote::before {
+  content: ''; display: block; width: 1px; height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--accent));
+  margin: 0 auto 2rem;
+}
+.transition-quote p {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem); color: var(--ink-muted);
+  max-width: 400px; margin: 0 auto; line-height: 2;
+}
+
+/* ===== MARQUEE BAND ===== */
+.marquee-band {
+  overflow: hidden;
+  padding: 1.2rem 0;
+  background: linear-gradient(90deg, rgba(26,26,46,0.03), rgba(201,169,110,0.06), rgba(26,26,46,0.03));
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+  position: relative;
+}
+.marquee-band::before, .marquee-band::after {
+  content: '';
+  position: absolute; top: 0; bottom: 0; width: 80px; z-index: 2; pointer-events: none;
+}
+.marquee-band::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--paper), transparent);
+}
+.marquee-band::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--paper), transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 50s linear infinite;
+}
+.marquee-band:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marqueeScroll {
+  to { transform: translateX(-50%); }
+}
+.marquee-item {
+  flex-shrink: 0;
+  padding: 0 2rem;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.92rem;
+}
+.marquee-item .zh {
+  font-family: 'Noto Serif SC', serif;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+.marquee-item .dot {
+  color: var(--accent);
+  font-size: 0.45rem;
+  opacity: 0.6;
+}
+.marquee-item .en {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  color: var(--ink-light);
+  font-size: 0.95rem;
+}
+
+/* ===== GLASS SCENE ===== */
+.scene {
+  margin: 3.5rem -2rem; padding: 2.5rem 2.5rem;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(24px) saturate(1.4); -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 12px; position: relative; overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.scene:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(201, 169, 110, 0.08);
+}
+.scene-label {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-family: 'Noto Sans SC', sans-serif; font-size: 0.68rem;
+  letter-spacing: 0.2em; color: var(--accent); margin-bottom: 1.2rem; font-weight: 500;
+  position: relative; z-index: 1;
+}
+.scene-label::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); display: inline-block;
+}
+.scene p { font-size: 1rem; color: var(--ink-soft); line-height: 2.1; position: relative; z-index: 1; }
+
+/* ===== INSIGHT BLOCK ===== */
+.insight {
+  margin: 3.5rem 0; padding: 2rem 2rem;
+  background: linear-gradient(135deg, rgba(201,169,110,0.04), rgba(201,169,110,0.01));
+  border-left: 2px solid var(--accent); border-radius: 0 8px 8px 0;
+}
+.insight p {
+  font-size: 1.1rem; color: var(--ink); line-height: 2.2; margin-bottom: 0;
+}
+
+/* ===== DUAL PORTRAIT — FLIP CARDS ===== */
+.dual {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  margin: 3.5rem -2rem; perspective: 1200px;
+}
+.dual-card {
+  min-height: 280px; cursor: pointer; position: relative;
+  transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dual-card.flipped { transform: rotateY(180deg); }
+.dual-face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  padding: 2.5rem 2rem; border-radius: 8px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.dual-front {
+  background: linear-gradient(160deg, #1a1a2e, #16213e);
+  border: 1px solid rgba(201, 169, 110, 0.12);
+  text-align: center; align-items: center;
+}
+.dual-front h4 {
+  font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;
+}
+.dual-front .sub {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 0.85rem; color: var(--accent-light); letter-spacing: 0.1em;
+}
+.dual-back {
+  background: linear-gradient(160deg, #16213e, #0f3460);
+  border: 1px solid rgba(201, 169, 110, 0.15);
+  transform: rotateY(180deg);
+}
+.dual-back p {
+  font-size: 0.95rem; color: rgba(255,255,255,0.65); line-height: 2; margin-bottom: 1rem;
+}
+.dual-back p:last-child { margin-bottom: 0; }
+
+/* ===== INLINE QUOTE ===== */
+.inline-quote {
+  margin: 4rem 0; padding: 3rem 2rem; position: relative; text-align: center;
+  background: radial-gradient(ellipse at center, rgba(201,169,110,0.04), transparent 70%);
+}
+.inline-quote::before, .inline-quote::after {
+  content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+  width: 60px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.inline-quote::before { top: 0; }
+.inline-quote::after { bottom: 0; }
+.inline-quote p {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: clamp(1.2rem, 2.8vw, 1.5rem); color: var(--ink); line-height: 2;
+  margin-bottom: 1rem; text-align: center;
+}
+.inline-quote .en {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 1rem; color: var(--ink-light); margin-bottom: 0.8rem;
+}
+.inline-quote cite {
+  font-size: 0.82rem; color: var(--ink-light); font-style: normal;
+  font-family: 'Noto Sans SC', sans-serif;
+}
+
+/* ===== TURNING POINT ===== */
+.turning-point {
+  margin: 5rem 0; text-align: center; padding: 4rem 2rem; position: relative;
+  background: radial-gradient(ellipse at center, rgba(201,169,110,0.06), transparent 60%);
+  border-radius: 12px;
+}
+.turning-point::before {
+  content: ''; display: block; width: 1px; height: 50px;
+  background: linear-gradient(to bottom, transparent, var(--accent));
+  margin: 0 auto 2.5rem;
+}
+.turning-point p {
+  font-size: 1.25rem; color: var(--ink); line-height: 2.4;
+  text-align: center; max-width: 480px; margin: 0 auto;
+}
+.turning-point .highlight {
+  color: var(--accent); font-weight: 700;
+  text-shadow: 0 0 20px rgba(201, 169, 110, 0.2);
+}
+
+/* ===== CHARACTER VOICE ===== */
+.voice {
+  background: linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+  color: #fff; margin: 0; padding: 5rem 2rem; position: relative;
+  overflow: hidden; border-radius: 10px;
+}
+.voice::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(800px 500px at 20% 20%, rgba(201,169,110,0.06), transparent 60%),
+    radial-gradient(600px 400px at 80% 80%, rgba(196,114,127,0.04), transparent 50%);
+  pointer-events: none;
+}
+.voice-inner { max-width: 600px; margin: 0 auto; position: relative; z-index: 1; }
+.voice-label {
+  font-family: 'Noto Sans SC', sans-serif; font-size: 0.65rem;
+  letter-spacing: 0.3em; color: var(--accent-light); margin-bottom: 0.8rem;
+  text-transform: uppercase; opacity: 0.7;
+}
+.voice-name {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 4.5vw, 3rem);
+  font-weight: 600; font-style: italic; color: var(--accent-light);
+  margin-bottom: 0.5rem; line-height: 1.3;
+  text-shadow: 0 0 40px rgba(201, 169, 110, 0.15);
+}
+.voice-tagline {
+  font-size: 0.95rem; color: rgba(255,255,255,0.4); margin-bottom: 3rem;
+  padding-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.voice p {
+  color: rgba(255,255,255,0.6); font-size: 1rem; line-height: 2.1;
+  margin-bottom: 1.5rem; text-align: left;
+}
+.voice p b { color: rgba(255,255,255,0.9); font-weight: 600; }
+.voice .v-quote {
+  border-left: 2px solid var(--accent); padding-left: 1.5rem; margin: 2.5rem 0;
+  font-style: italic;
+}
+.voice .v-quote p {
+  font-size: 1.1rem; color: rgba(255,255,255,0.75); line-height: 2;
+}
+.voice .v-num {
+  font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 500;
+  font-size: 0.85rem; color: var(--accent); letter-spacing: 0.06em;
+  margin-bottom: 0.6rem; display: block;
+}
+.voice .v-heading {
+  font-size: 1.15rem; font-weight: 600; color: rgba(255,255,255,0.85);
+  margin-bottom: 0.8rem; margin-top: 2.5rem;
+}
+.voice-takeaway {
+  margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08);
+}
+.voice-takeaway p {
+  font-size: 0.92rem; color: rgba(255,255,255,0.45); line-height: 1.9; margin-bottom: 0.6rem;
+}
+.voice-takeaway p span { color: var(--accent-light); }
+
+/* ===== VOICE STACK ===== */
+.voice-stack {
+  background: linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+  margin: 0; padding: 0; position: relative; overflow: hidden;
+  cursor: pointer;
+}
+.voice-stack::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(800px 500px at 20% 20%, rgba(201,169,110,0.06), transparent 60%),
+    radial-gradient(600px 400px at 80% 80%, rgba(196,114,127,0.04), transparent 50%);
+  pointer-events: none;
+}
+.voice-stack-orb {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  filter: blur(60px); opacity: 0.15;
+  animation: orbFloat 12s ease-in-out infinite;
+}
+.voice-stack-orb--1 {
+  width: 300px; height: 300px; background: var(--accent);
+  top: 10%; left: -5%; animation-delay: 0s;
+}
+.voice-stack-orb--2 {
+  width: 250px; height: 250px; background: var(--rose);
+  bottom: 10%; right: -5%; animation-delay: -6s;
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(20px, -30px) scale(1.1); }
+  66% { transform: translate(-15px, 20px) scale(0.95); }
+}
+.voice-cards {
+  position: relative;
+  min-height: 400px;
+  perspective: 1500px;
+}
+.voice-card {
+  position: absolute; top: 0; left: 0; right: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.voice-card.front {
+  opacity: 1; transform: rotateY(0deg) scale(1); z-index: 2;
+}
+.voice-card.back {
+  opacity: 0; transform: rotateY(15deg) scale(0.97); z-index: 1;
+  pointer-events: none;
+}
+.voice-stack .voice {
+  background: transparent;
+}
+.voice-stack .voice::before {
+  display: none;
+}
+
+/* ===== LIFE WISDOM — CARD GRID ===== */
+.life-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  margin: 3rem 0;
+}
+.life-card {
+  padding: 2.5rem 2rem;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-radius: 10px;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative; overflow: hidden;
+}
+.life-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(74, 125, 255, 0.12);
+}
+.life-card > *:not(.life-card-glow) { position: relative; z-index: 1; }
+.scene > *:not(.scene-glow) { position: relative; z-index: 1; }
+.dual-face > *:not(.dual-glow) { position: relative; z-index: 1; }
+.voice > *:not(.voice-glow) { position: relative; z-index: 1; }
+.q-item > *:not(.q-glow) { position: relative; z-index: 1; }
+.life-card-glow, .scene-glow, .dual-glow, .voice-glow, .q-glow {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+}
+.life-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1; max-width: 50%; margin: 0 auto;
+}
+.life-card-num {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 2.5rem; font-weight: 600; color: rgba(201, 169, 110, 0.12);
+  line-height: 1; margin-bottom: 1rem;
+}
+.life-card h3 {
+  font-size: 1.15rem; font-weight: 700; color: var(--ink); margin-bottom: 0.3rem;
+}
+.life-card .en {
+  font-family: 'Noto Sans SC', sans-serif; font-size: 0.65rem;
+  color: var(--ink-light); letter-spacing: 0.12em; margin-bottom: 1.2rem;
+  display: block;
+}
+.life-card p { font-size: 0.95rem; color: var(--ink-soft); line-height: 2; }
+
+/* ===== REFLECTION ===== */
+.reflection {
+  background: linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+  color: #fff; margin: 3rem 0 0; padding: 2.5rem 2rem; text-align: center;
+  position: relative; overflow: hidden; border-radius: 10px;
+  max-height: 280px;
+}
+.reflection-ring {
+  position: absolute; width: 400px; height: 400px; border-radius: 50%;
+  border: 1px solid rgba(74, 125, 255, 0.08);
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  animation: ringExpand 8s ease-in-out infinite;
+  pointer-events: none;
+}
+.reflection-ring:nth-child(2) { animation-delay: -2.6s; }
+.reflection-ring:nth-child(3) { animation-delay: -5.3s; }
+@keyframes ringExpand {
+  0% { width: 100px; height: 100px; opacity: 0.6; }
+  100% { width: 600px; height: 600px; opacity: 0; }
+}
+.reflection > *:not(.life-card-glow):not(.reflection-ring) { position: relative; z-index: 1; }
+.reflection p {
+  color: rgba(255,255,255,0.8); font-size: 1.05rem;
+  max-width: 500px; margin: 0 auto 1.5rem; text-align: center;
+}
+.reflection p.big {
+  font-size: 1.35rem; color: #fff; line-height: 2.4;
+}
+.reflection .accent { color: var(--accent); }
+
+/* ===== QUESTIONS ===== */
+.questions { margin: 3rem 0; display: flex; flex-direction: column; }
+.q-item {
+  padding: 2.5rem 2rem; border-bottom: 1px solid var(--divider);
+  transition: background 0.3s; position: relative; overflow: hidden;
+}
+.q-item:first-child { border-top: 1px solid var(--divider); }
+.q-item:hover { background: rgba(201, 169, 110, 0.02); }
+.q-item .q-label {
+  font-family: 'Noto Sans SC', sans-serif; font-size: 0.65rem;
+  letter-spacing: 0.2em; color: var(--accent); margin-bottom: 0.8rem; font-weight: 500;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.q-item .q-label::before {
+  content: ''; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--accent); display: inline-block;
+}
+.q-item h4 {
+  font-size: 1.15rem; font-weight: 700; margin-bottom: 0.6rem;
+  color: var(--ink); line-height: 1.6;
+}
+.q-item p { font-size: 0.92rem; color: var(--ink-muted); line-height: 1.9; margin-bottom: 0; }
+
+/* ===== ENDING ===== */
+.ending {
+  min-height: 80vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  padding: 6rem 2rem; position: relative; overflow: hidden;
+  background: linear-gradient(170deg, var(--paper) 0%, #c8d0d8 6%, #8a9aaa 14%, #4a6a8a 24%, #1a3a5c 38%, #0f3460 52%, #16213e 72%, #1a1a2e 88%, #0a0a1a 100%);
+  color: #fff;
+}
+.ending-particles {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+}
+.ending-particle {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,169,110,0.25), transparent 70%);
+  animation: endingParticle linear infinite;
+}
+@keyframes endingParticle {
+  0% { transform: translateY(0) scale(0); opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.6; }
+  100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+}
+.ending-text {
+  font-size: clamp(1.3rem, 3.2vw, 1.9rem); line-height: 2.6;
+  max-width: 520px; color: rgba(255,255,255,0.7); margin-bottom: 3rem;
+  position: relative; z-index: 1;
+}
+.ending-text em { font-style: normal; color: var(--accent-light); font-weight: 600; }
+.ending-attr {
+  font-size: 0.8rem; color: rgba(255,255,255,0.2);
+  font-family: 'Noto Sans SC', sans-serif; letter-spacing: 0.1em;
+  position: relative; z-index: 1;
+}
+.ending-download {
+  margin-top: 2.5rem; text-align: center;
+  position: relative; z-index: 1;
+}
+.ending-download a {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  border: 1px solid rgba(201,169,110,0.4);
+  border-radius: 2rem;
+  color: var(--accent-light);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  background: rgba(201,169,110,0.06);
+}
+.ending-download a:hover {
+  background: rgba(201,169,110,0.15);
+  border-color: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(201,169,110,0.2);
+}
+.ending-download svg {
+  width: 16px; height: 16px;
+  stroke: currentColor; fill: none; stroke-width: 2;
+}
+
+/* ===== SEPARATOR ===== */
+.sep { text-align: center; padding: 4rem 0; color: var(--ink-light); font-size: 0.8rem; opacity: 0.3; }
+
+/* ===== VISUAL BREAK — IMAGE BLOCKS ===== */
+.visual-break {
+  margin: 3.5rem -2rem; border-radius: 10px; overflow: hidden;
+  position: relative; height: 360px;
+  opacity: 0.55;
+}
+.visual-break img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: saturate(0.6) brightness(0.92);
+  display: block;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+}
+
+/* ===== ATMOSPHERIC IMAGES ===== */
+.opening-atmos {
+  position: absolute; inset: 0; z-index: 0; overflow: hidden;
+  opacity: 0.07; pointer-events: none;
+}
+.opening-atmos img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: blur(3px) saturate(0.4) brightness(0.8);
+}
+.chapter-atmos {
+  margin: 2.5rem -2rem; border-radius: 8px; overflow: hidden;
+  position: relative; height: 220px;
+  opacity: 0.35;
+}
+.chapter-atmos img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: saturate(0.5) brightness(0.9);
+  display: block;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+}
+.scene-atmos {
+  position: absolute; inset: 0; z-index: 0; overflow: hidden;
+  border-radius: 12px; opacity: 0.12; pointer-events: none;
+}
+.scene-atmos img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: blur(2px) saturate(0.4) brightness(0.7);
+}
+
+/* ===== FADE ANIMATIONS ===== */
+.fade-up {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1), transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+.stagger-item {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.stagger-item.visible { opacity: 1; transform: translateY(0); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  body { font-size: 16px; }
+  .chapter-nav, .top-nav { display: none; }
+  .dual { grid-template-columns: 1fr; margin: 3rem 0; }
+  .scene { margin: 3rem 0; padding: 2rem 1.5rem; }
+  .reflection { margin: 2.5rem 0 0; padding: 2rem 1.5rem; }
+  .voice { margin: 0; padding: 3.5rem 1.5rem; }
+  .voice-stack { padding: 0; }
+  .narrative { padding: 0 1.5rem; }
+  .life-grid { grid-template-columns: 1fr; }
+  .life-card:last-child:nth-child(odd) { max-width: 100%; }
+  .chapter { padding: 5rem 0 3rem; }
+  .chapter-num-bg { font-size: 5rem; top: 4rem; }
+  .inline-quote { padding: 2.5rem 1rem; }
+  .turning-point { padding: 3rem 1rem; }
+  .chapter-atmos { margin: 2rem -1.5rem; height: 200px; }
+  .visual-break { margin: 2.5rem -1.5rem; height: 280px; }
+  .marquee-band { margin: 0 -1.5rem; }
+  .marquee-item { padding: 0 1.2rem; font-size: 0.82rem; }
+}
+
+@media print {
+  .chapter-nav, .top-nav, .progress, .grain-overlay { display: none; }
+  .opening { min-height: auto; padding: 3rem 2rem; }
+  .fade-up, .stagger-item { opacity: 1; transform: none; }
+  .ending { min-height: auto; padding: 3rem 2rem; }
+  .voice { break-inside: avoid; }
+  .voice-stack { break-inside: avoid; }
+  .life-card { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="grain-overlay"></div>
+<div class="progress" id="progress"></div>
+
+<nav class="top-nav" id="topNav">
+  <a href="#ch1" data-target="ch1">初见</a>
+  <a href="#ch2" data-target="ch2">偏见</a>
+  <a href="#ch3" data-target="ch3">傲慢</a>
+  <a href="#ch4" data-target="ch4">那封信</a>
+  <a href="#ch5" data-target="ch5">体面</a>
+  <a href="#ch6" data-target="ch6">和解</a>
+  <a href="#voice-stack" data-target="voice-stack">独白</a>
+  <a href="#ch-life" data-target="ch-life">照见自己</a>
+  <a href="#ch-questions" data-target="ch-questions">聊聊</a>
+</nav>
+
+<nav class="chapter-nav" id="chapterNav">
+  <div class="chapter-dot" data-target="ch1"><span class="tooltip">初见</span></div>
+  <div class="chapter-dot" data-target="ch2"><span class="tooltip">偏见</span></div>
+  <div class="chapter-dot" data-target="ch3"><span class="tooltip">傲慢</span></div>
+  <div class="chapter-dot" data-target="ch4"><span class="tooltip">那封信</span></div>
+  <div class="chapter-dot" data-target="ch5"><span class="tooltip">体面</span></div>
+  <div class="chapter-dot" data-target="ch6"><span class="tooltip">和解</span></div>
+  <div class="chapter-dot" data-target="voice-stack"><span class="tooltip">独白</span></div>
+  <div class="chapter-dot" data-target="ch-life"><span class="tooltip">照见自己</span></div>
+  <div class="chapter-dot" data-target="ch-questions"><span class="tooltip">聊聊</span></div>
+</nav>
+
+<!-- ==================== OPENING ==================== -->
+<section class="opening">
+  <div class="opening-particles" id="openingParticles"></div>
+  <div class="opening-atmos"><img src="vibe_images/regency-ballroom_1788256745.png" alt=""></div>
+  <div class="opening-glow"></div>
+  <div class="opening-label">读 后 随 笔</div>
+  <div class="en-title">Pride &amp; Prejudice · Jane Austen · 1813</div>
+  <h1>傲慢与偏见</h1>
+  <p class="opening-sub">
+    一本关于误会的书。<br>
+    也是一个关于「看人」的故事。
+  </p>
+  <p class="opening-note">
+    人人都说这是一部爱情经典。<br>
+    但我们这次，想从爱情以外的角度打开它。
+  </p>
+</section>
+
+<!-- ==================== NARRATIVE ==================== -->
+<div class="narrative">
+
+<div class="marquee-band">
+  <div class="marquee-track">
+    <div class="marquee-item"><span class="zh">我们总以为自己能看准人</span><span class="dot">◆</span><span class="en">We always think we can read people</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">被所有人误解的人，其实比谁都渴望被看见</span><span class="dot">◆</span><span class="en">The one everyone misunderstood most wanted to be seen</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">有些真相，需要一封信才能说清楚</span><span class="dot">◆</span><span class="en">Some truths need a letter to be told</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">真正的善意，常常是无声的</span><span class="dot">◆</span><span class="en">True kindness is often silent</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">两个看错彼此的人，学会了诚实地看人、也谦卑地看己</span><span class="dot">◆</span><span class="en">Two who misread each other learned to see honestly and look humbly</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">我们总以为自己能看准人</span><span class="dot">◆</span><span class="en">We always think we can read people</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">被所有人误解的人，其实比谁都渴望被看见</span><span class="dot">◆</span><span class="en">The one everyone misunderstood most wanted to be seen</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">有些真相，需要一封信才能说清楚</span><span class="dot">◆</span><span class="en">Some truths need a letter to be told</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">真正的善意，常常是无声的</span><span class="dot">◆</span><span class="en">True kindness is often silent</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">两个看错彼此的人，学会了诚实地看人、也谦卑地看己</span><span class="dot">◆</span><span class="en">Two who misread each other learned to see honestly and look humbly</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+  </div>
+</div>
+
+<!-- CH1 -->
+<section class="chapter fade-up" id="ch1">
+  <div class="chapter-num-bg">一</div>
+  <div class="chapter-num">一</div>
+  <h2 class="chapter-title">初见一本书</h2>
+
+  <p class="lead">读《傲慢与偏见》的时候，读到某个时刻我突然意识到——<strong>这些人，我认识</strong>。</p>
+
+  <p>那个嘴上不饶人但其实心里很在乎的姑娘，我认识。那个明明很善良却不知道怎么表达的男生，我也认识。甚至那个一开口就让人尴尬、自以为是的牧师，我也在某次聚餐里遇到过。</p>
+
+  <p>故事从一句话开始。达西先生在舞会上说："她还没有漂亮到能打动我的程度。"而那个姑娘，偏偏把这句话记得清清楚楚。</p>
+
+  <p>故事从这里就开始了——不是从爱情开始，而是从<strong>伤害</strong>开始。</p>
+
+  <div class="visual-break"><img src="vibe_images/regency-ballroom_1788256745.png" alt=""></div>
+</section>
+
+
+<!-- CH2 -->
+<section class="chapter fade-up" id="ch2">
+  <div class="chapter-num-bg">二</div>
+  <div class="chapter-num">二</div>
+  <h2 class="chapter-title">我们都以为自己能看准人</h2>
+
+  <p>伊丽莎白是那种让人喜欢的姑娘。聪明、机灵、嘴巴厉害，最难得的是她有主见。在那个女人只需要嫁个好人家的年代，她偏偏要说：如果遇不到让我尊重的人，我宁可一个人待着。</p>
+
+  <p>我读到这里的时候特别佩服她。觉得她活得太清醒了。</p>
+
+  <p>然后奥斯汀笔锋一转——<strong>让这个最清醒的人，犯了最糊涂的错误。</strong></p>
+
+  <div class="scene">
+    <div class="scene-label">一个场景</div>
+    <p>军官韦翰出现了。英俊、健谈、身世可怜。他说达西抢走了本该属于他的牧师职位，说他被亏待了。伊丽莎白几乎没犹豫就相信了他。为什么？因为韦翰说的话，跟她已经形成的判断完全吻合——达西嘛，本来就是那种傲慢的人，做出这种事不奇怪。</p>
+  </div>
+
+  <p>后来我才知道，心理学上有个词叫"确认偏误"。就是说，一旦我们心里有了一个结论，就会不自觉地去找证据来支持它，而自动忽略那些不支持它的信息。</p>
+
+  <p>读到这一段的时候，我心里"咯"了一下。因为我想到自己——<strong>有多少次，我以为自己在"理性判断"，其实只是在"找证据"？</strong></p>
+
+  <p>面试的时候，因为候选人简历上某个细节不满意，后面整场面试都在找"他不行"的证据。跟同事合作，因为第一次沟通不顺畅，就给人贴了个"不好合作"的标签。</p>
+
+  <div class="insight">
+    <p>伊丽莎白让我害怕的地方不是她犯了错，而是她犯错时的那种笃定。那种"我一看就知道"的自信——恰恰是偏见最危险的伪装。</p>
+  </div>
+
+  <div class="visual-break"><img src="vibe_images/regency-woman-portrait_1788257655.png" alt=""></div>
+</section>
+
+
+<!-- CH3 -->
+<section class="chapter fade-up" id="ch3">
+  <div class="chapter-num-bg">三</div>
+  <div class="chapter-num">三</div>
+  <h2 class="chapter-title">冷漠的人，未必不在乎</h2>
+
+  <p>说说达西。</p>
+
+  <p>如果只看前半本书，达西简直是个反派。有钱有地位，但目中无人。在舞会上挑三拣四，对不认识的人爱答不理。跟伊丽莎白说话的时候，语气里总带着一种"你不懂"的优越感。</p>
+
+  <p>但后来我慢慢发现一件事：<strong>达西不是不在乎，他是不知道怎么在乎。</strong></p>
+
+  <div class="dual">
+    <div class="dual-card" onclick="this.classList.toggle('flipped')">
+      <div class="dual-face dual-front">
+        <h4>你以为的达西</h4>
+        <div class="sub">The Mask</div>
+      </div>
+      <div class="dual-face dual-back">
+        <p>冷漠、傲慢、看不起所有人。在舞会上拒绝跳舞，对班纳特一家嗤之以鼻。</p>
+        <p>他看起来像是一个不需要任何人的人。</p>
+      </div>
+    </div>
+    <div class="dual-card" onclick="this.classList.toggle('flipped')">
+      <div class="dual-face dual-front">
+        <h4>真实的达西</h4>
+        <div class="sub">The Truth</div>
+      </div>
+      <div class="dual-face dual-back">
+        <p>暗中替莉迪亚还债，保全了班纳特家的名声。默默帮助宾利认清自己的感情。为伊丽莎白做了一切，却不让她知道。</p>
+        <p>他其实是一个做了很多好事、却从不开口的人。</p>
+      </div>
+    </div>
+  </div>
+
+  <p>我身边也有这样的"达西"。那个从不主动打招呼的同事，后来我才知道他每次项目上线前都偷偷检查彼此的代码。那个看起来高高在上的领导，其实私下帮团队挡了很多来自上层的压力。</p>
+
+  <p>我们太习惯用"会不会说话"来判断一个人了。一个不善表达的人，很容易被贴上"冷漠"的标签。但<strong>冷漠和笨拙，是两回事</strong>。</p>
+
+  <div class="insight">
+    <p>达西的"傲慢"，其实是一种保护色。他从小被教导要与人保持距离，久而久之，距离就变成了别人眼中的傲慢。我们生活中有多少"达西"，不是看不起你，而是不知道怎么走向你？</p>
+  </div>
+
+  <div class="visual-break"><img src="vibe_images/regency-gentleman_1788257670.png" alt=""></div>
+</section>
+
+
+<!-- CH4 -->
+<section class="chapter fade-up" id="ch4">
+  <div class="chapter-num-bg">四</div>
+  <div class="chapter-num">四</div>
+  <h2 class="chapter-title">那封信</h2>
+
+  <p>全书最打动我的，不是达西的求婚。是伊丽莎白读完达西那封信之后的那段独白。</p>
+
+  <p>达西早就爱上伊丽莎白了。可他第一次求婚说的是："我已经忍得够久了。"又说："我明知道你的家世配不上我。"他说的全是真心话，可他用的是"我在向下兼容你"的语气——把爱说成了施舍。</p>
+
+  <p>伊丽莎白一句话就把他堵了回去："你是这世上我最后一个愿意嫁的人。"</p>
+
+  <div class="inline-quote">
+    <div class="en">"I have been a selfish being all my life, in practice, though not in principle."</div>
+    <p>「我这一生都是个自私的人——实践上是，原则上却不是。」</p>
+    <cite>— 达西致伊丽莎白</cite>
+  </div>
+
+  <div class="chapter-atmos"><img src="vibe_images/letter-quill_1788256761.png" alt=""></div>
+
+  <p>但真正改变一切的，是后来那封信。信里，他一条一条地解释了真相。韦翰是个骗子。他承认自己确实傲慢，也承认自己拆散了简和宾利的姻缘。这封信没有姿态，只有证据和认错。</p>
+
+  <p>伊丽莎白读了两遍，哭了。她第一次开始怀疑自己：<strong>也许，我一直都在误会他？</strong></p>
+
+  <p>注意，她是先怀疑自己，才看见真相的——顺序很重要。</p>
+
+  <div class="turning-point">
+    <p>一个人能说出<span class="highlight">"我可能错了"</span>，<br>需要的不是软弱，<br>而是巨大的勇气。</p>
+  </div>
+
+  <p>伊丽莎白最了不起的地方，不是她聪明，不是她有主见。而是她在发现自己错了之后，<strong>没有找借口，没有转移话题，而是直面了它</strong>。</p>
+
+  <p>这一点，比整本书里任何一个情节都让我印象深刻。</p>
+</section>
+
+
+<!-- CH5 -->
+<section class="chapter fade-up" id="ch5">
+  <div class="chapter-num-bg">五</div>
+  <div class="chapter-num">五</div>
+  <h2 class="chapter-title">在她最狼狈的时候</h2>
+
+  <p>那封信之后，故事急转直下。</p>
+
+  <p>伊丽莎白最冲动的妹妹莉迪亚，被韦翰几句花言巧语骗得私奔了。在那个名声就是一切的年代，这等于把全家推到悬崖边——姐姐们的婚事全得泡汤，整个家族的社会地位彻底崩塌。</p>
+
+  <p>可就在这时候，出手的人是达西。他找遍伦敦，替韦翰还清债务，逼他娶了莉迪亚，甚至亲自出席了那场难堪的婚礼——然后，他<strong>不许任何人说</strong>。</p>
+
+  <p>伊丽莎白辗转知道真相的那一刻，彻底震惊了：那个她骂了半本书的"傲慢的人"，在她全家最不堪的时候，做了最善良、最体面、也最不邀功的事。</p>
+
+  <div class="visual-break"><img src="vibe_images/english-estate_1788256785.png" alt=""></div>
+
+  <div class="scene">
+    <div class="scene-label">彭伯里</div>
+    <p>后来她来到达西的庄园。她以为会看到浮华，可她听见的是管家如何由衷敬重他、佃户如何真心信任他、他对自己的妹妹有多疼爱。在那个讲究出身的年代，达西对她那位出身不算体面的舅舅礼貌而得体——那不是礼貌，是人品。</p>
+  </div>
+
+  <p>一个人的品格，藏在他怎么对待那些与他无关的人身上。他对服务员、对下属、对家人——那些没有利益的地方，才是他真实的样子。</p>
+
+  <div class="insight">
+    <p>真正的善意，常常是无声的。愿意为你做事的人很多；愿意为你做事、还不让你有负担的人，才难得。</p>
+  </div>
+</section>
+
+<div class="marquee-band">
+  <div class="marquee-track">
+    <div class="marquee-item"><span class="zh">我们总以为自己能看准人</span><span class="dot">◆</span><span class="en">We always think we can read people</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">被所有人误解的人，其实比谁都渴望被看见</span><span class="dot">◆</span><span class="en">The one everyone misunderstood most wanted to be seen</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">有些真相，需要一封信才能说清楚</span><span class="dot">◆</span><span class="en">Some truths need a letter to be told</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">真正的善意，常常是无声的</span><span class="dot">◆</span><span class="en">True kindness is often silent</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">两个看错彼此的人，学会了诚实地看人、也谦卑地看己</span><span class="dot">◆</span><span class="en">Two who misread each other learned to see honestly and look humbly</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">我们总以为自己能看准人</span><span class="dot">◆</span><span class="en">We always think we can read people</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">被所有人误解的人，其实比谁都渴望被看见</span><span class="dot">◆</span><span class="en">The one everyone misunderstood most wanted to be seen</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">有些真相，需要一封信才能说清楚</span><span class="dot">◆</span><span class="en">Some truths need a letter to be told</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">真正的善意，常常是无声的</span><span class="dot">◆</span><span class="en">True kindness is often silent</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+    <div class="marquee-item"><span class="zh">两个看错彼此的人，学会了诚实地看人、也谦卑地看己</span><span class="dot">◆</span><span class="en">Two who misread each other learned to see honestly and look humbly</span></div>
+    <div class="marquee-item"><span class="dot">◆</span></div>
+  </div>
+</div>
+
+<!-- CH6 -->
+<section class="chapter fade-up" id="ch6">
+  <div class="chapter-num-bg">六</div>
+  <div class="chapter-num">六</div>
+  <h2 class="chapter-title">一场和解</h2>
+
+  <p>达西的姨母凯瑟琳夫人深夜闯上门，命令伊丽莎白发誓永远不嫁给达西，理由是：你家家世配不上他。</p>
+
+  <p>伊丽莎白没有退缩。她平静地回敬："他是个绅士，我是个绅士之女——论身份，我们平等。"</p>
+
+  <p>最讽刺的是：老太太这一闹，反而让达西确信伊丽莎白心里有他。他第二次求婚——这一次，他没有再用身份压她，只是平平静静地站到她面前。</p>
+
+  <div class="inline-quote">
+    <div class="en">"Till this moment I never knew myself."</div>
+    <p>「直到此刻，我才真正了解自己。」</p>
+    <cite>— 伊丽莎白</cite>
+  </div>
+
+  <p>他说：「我这一生都是个自私的人——实践上是，原则上却不是。」</p>
+
+  <p>她也终于承认：「直到此刻，我才真正了解自己。」</p>
+
+  <p>书里没有王子救公主。这是两个都曾看错彼此的人，学会了诚实地看人、也谦卑地看己之后，才走到了一起。</p>
+</section>
+
+<div class="sep">&middot;</div>
+
+<!-- ==================== VOICE STACK ==================== -->
+<div class="voice-stack" id="voice-stack">
+  <div class="voice-stack-orb voice-stack-orb--1"></div>
+  <div class="voice-stack-orb voice-stack-orb--2"></div>
+  <div class="voice-cards" id="voice-cards">
+
+    <!-- ELIZABETH (default front) -->
+    <section class="voice voice-card front" id="voice-elizabeth">
+    <div class="voice-inner">
+      <div class="voice-label">角色独白 · 第一人称</div>
+      <div class="voice-name">Elizabeth</div>
+      <div class="voice-tagline">「有些道理，达西教会了我。而我，花了很久才听懂。」</div>
+
+      <p>人们都以为，这本书讲的是我怎么爱上达西。可真正改变我的，不是爱情，而是<b>我终于承认：我可能看错了人</b>。而且错得很笃定。</p>
+
+      <p>我这一生最骄傲的，是我的判断力；我最致命的，也是它。</p>
+
+      <span class="v-num">壹 · 舞会</span>
+      <div class="v-heading">我差点用一场舞会，判了他死刑</div>
+      <p>第一眼，达西傲慢、冷面、拒人于千里之外。我只看了他一眼，就认定他难相处，从此他做什么都顺理成章地"印证"我的判断——反正我认定了。</p>
+      <p>后来我才知道，那不是他在舞会上的样子，<b>那是我那时候的样子</b>。我带着偏见看人，于是只看得见偏见。</p>
+
+      <div class="v-quote">
+        <p>第一印象是用来记住的，不是用来宣判的。</p>
+      </div>
+
+      <span class="v-num">贰 · 那个人</span>
+      <div class="v-heading">会说话的人，未必可信</div>
+      <p>韦翰一开口，人人都想信他。他风趣、自嘲、合情合理。我差点毁在对他的一见如故上。而我一度最看不上的达西，却在我不为人知的狼狈里，默默替我做了所有事。<b>会说话，跟可靠，从来不是一回事。</b></p>
+
+      <span class="v-num">叁 · 守住自己</span>
+      <div class="v-heading">守住自己，再谈去爱</div>
+      <p>我拒绝达西，不是因为不爱，而是因为<b>我不能接受被人看低</b>。我可以爱，但我不能为此丢掉自己的分量。夏洛特选了安稳，莉迪亚信了冲动，我选了守住自己。哪一种都不完美，但至少我得为自己负责。</p>
+
+      <span class="v-num">肆 · 看清自己</span>
+      <div class="v-heading">直到我看错了他，我才看清自己</div>
+      <p>达西说："我这一生都是个自私的人——实践上是，原则上却不是。"我笑他，然后又笑自己：<b>谁不是"原则说得漂亮，实践却做不到"？</b></p>
+      <p>成长最难的，不是学新东西，而是承认自己看错了、做错了、还改得动。</p>
+
+      <div class="voice-takeaway">
+        <p><span></span> 第一印象是用来记住的，不是用来宣判的。</p>
+        <p><span></span> 怎么说，往往比说什么更致命。</p>
+        <p><span>③</span> 会说话 ≠ 可信；看他做什么。</p>
+        <p><span>④</span> 守住自己的分量，再去爱。</p>
+        <p><span>⑤</span> 承认看错了，才是成长的开始。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DARCY (back) -->
+  <section class="voice voice-card back" id="voice-darcy">
+    <div class="voice-inner">
+      <div class="voice-label">角色独白 · 第一人称</div>
+      <div class="voice-name">Darcy</div>
+      <div class="voice-tagline">「从前我总以为，人要活得让人敬畏。后来才懂，要活得让人安心。」</div>
+
+      <p>人们都以为，我是那个傲慢的人。可真正困住我的，不是别人怎么看我——<b>是我怎么把自己看得太高，又太怕被人看轻。</b></p>
+
+      <span class="v-num">壹 · 开口</span>
+      <div class="v-heading">我明明爱她，却说得像施舍</div>
+      <p>第一次求婚，我用了"我已经忍得够久了"这样的措辞。我说的是真心，姿态却像在俯就。她回我："你是这世上我最后一个愿意嫁的人。"那一刻我才明白——<b>把对方看低，是爱里最昂贵的错误。</b></p>
+
+      <div class="v-quote">
+        <p>My good opinion once lost, is lost forever.</p>
+        <p>「我的好意，一旦失去便永不回头。」可我不曾想过——她凭什么要我的"好意"，还要先领我的情？</p>
+      </div>
+
+      <span class="v-num">贰 · 那封信</span>
+      <div class="v-heading">真诚不是掏心，是放下端着</div>
+      <p>后来我写了一封信，把事实一条条讲清楚——没有姿态，只有证据。她读信时才开始想：也许她一直误会了我。原来让人信服的，从来不是气势，<b>是真相本身。</b></p>
+
+      <span class="v-num">叁 · 做事</span>
+      <div class="v-heading">爱，是让她不必都知道</div>
+      <p>莉迪亚私奔、她全家蒙羞。我悄悄出钱替他们摆平了这一切，几乎不邀功。那一刻我懂了：<b>在她最狼狈的时候，替她守住体面；也是在做完这些后，平静地退开。</b></p>
+
+      <span class="v-num">肆 · 平等</span>
+      <div class="v-heading">这一次，我把自己放到和她一样的高度</div>
+      <p>第二次求婚，我没有再用身份压她，只是平等地站到她面前。我不需要她配得上我，我只需要她愿意。那一刻我才真正长大——<b>不再需要向谁证明自己更强。</b></p>
+
+      <div class="voice-takeaway">
+        <p><span>①</span> 别让骄傲，替你挡住那个真正对你好的人。</p>
+        <p><span>②</span> 把对方看低，是爱里最昂贵的错误。</p>
+        <p><span>③</span> 真诚，是撤回那些让你高高在上的姿态。</p>
+        <p><span>④</span> 承认自己错了，比证明自己对了更难，也更值得。</p>
+      </div>
+    </div>
+  </section>
+  </div>
+</div>
+
+<!-- ==================== LIFE WISDOM ==================== -->
+<section class="chapter fade-up" id="ch-life">
+  <div class="chapter-num-bg" style="opacity:0.025">后</div>
+  <div class="chapter-num">后来</div>
+  <h2 class="chapter-title">照见自己</h2>
+
+  <p>读完这本书，我最大的感受是：<strong>奥斯汀写的不是19世纪的英国，她写的是此刻的我们。</strong></p>
+
+  <div class="life-grid">
+    <div class="life-card stagger-item">
+      <div class="life-card-num">01</div>
+      <h3>关于社交</h3>
+      <span class="en">ON MEETING PEOPLE</span>
+      <p>达西花了整本书的时间去修复第一印象。韦翰靠第一印象骗了所有人。我对一个人的第一印象，到底有多少是"事实"，有多少是"我的心情"？别急，让时间说话。</p>
+    </div>
+    <div class="life-card stagger-item">
+      <div class="life-card-num">02</div>
+      <h3>关于感情</h3>
+      <span class="en">ON LOVE</span>
+      <p>好的感情不是找到一个完美的人，而是因为那个人，你想变成一个更好的人。达西因为伊丽莎白学会了表达，伊丽莎白因为达西学会了审慎。</p>
+    </div>
+    <div class="life-card stagger-item">
+      <div class="life-card-num">03</div>
+      <h3>关于工作</h3>
+      <span class="en">ON WORK</span>
+      <p>"做了"和"被知道做了"之间，有一条很重要的沟。你以为的"低调"，在别人眼里可能就是"冷漠"。不是说要炫耀，而是要学会沟通。</p>
+    </div>
+    <div class="life-card stagger-item">
+      <div class="life-card-num">04</div>
+      <h3>关于家庭</h3>
+      <span class="en">ON FAMILY</span>
+      <p>家庭给孩子最好的东西，不是物质条件，而是让他们看到两个人怎么好好相处。莉迪亚的放纵、简的天真、伊丽莎白的过度独立——都能在父母身上找到影子。</p>
+    </div>
+    <div class="life-card stagger-item">
+      <div class="life-card-num">05</div>
+      <h3>关于做内容</h3>
+      <span class="en">ON STORYTELLING</span>
+      <p>数据说服大脑，故事打动人心。不管是做汇报、做产品还是做个人品牌，"故事感"永远比"信息量"更有力量。</p>
+    </div>
+  </div>
+
+  <div class="reflection">
+    <div class="reflection-ring"></div>
+    <div class="reflection-ring"></div>
+    <div class="reflection-ring"></div>
+    <p>说到底，这本书教会我最重要的一件事是——</p>
+    <p class="big">成长的起点不是<span class="accent">"我要变得更好"</span>，<br>而是<span class="accent">"我承认现在不够好"</span>。</p>
+  </div>
+</section>
+
+<div class="sep">&middot;</div>
+
+<!-- ==================== QUESTIONS ==================== -->
+<section class="chapter fade-up" id="ch-questions">
+  <div class="chapter-num">写在最后</div>
+  <h2 class="chapter-title">几个想和你聊的问题</h2>
+
+  <div class="questions">
+    <div class="q-item stagger-item">
+      <div class="q-label">关于偏见</div>
+      <h4>你有没有一次"伊丽莎白时刻"？</h4>
+      <p>非常确信自己看对了人，结果完全搞错了。后来发生了什么？</p>
+    </div>
+    <div class="q-item stagger-item">
+      <div class="q-label">关于傲慢</div>
+      <h4>你有没有被误解为"高冷"的经历？</h4>
+      <p>其实不是看不起对方，只是不知道怎么表达善意。你是怎么处理的？</p>
+    </div>
+    <div class="q-item stagger-item">
+      <div class="q-label">关于选择</div>
+      <h4>夏洛蒂选择了安稳，莉迪亚选择了激情。</h4>
+      <p>如果是你，你会怎么选？有没有第三条路？</p>
+    </div>
+    <div class="q-item stagger-item">
+      <div class="q-label">关于当下</div>
+      <h4>算法推荐是不是在加剧我们的"偏见"？</h4>
+      <p>我们每天看到的信息都在印证已有的观点——怎么打破这个循环？</p>
+    </div>
+  </div>
+</section>
+
+</div><!-- /narrative -->
+
+<!-- ==================== ENDING ==================== -->
+<section class="ending">
+  <div class="ending-particles" id="endingParticles"></div>
+  <div class="ending-text">
+    <em>傲慢</em>让别人无法来爱我，<br>
+    <em>偏见</em>让我无法去爱别人。<br><br>
+    放下傲慢，我们才值得被爱。<br>
+    放下偏见，我们才有能力去爱。
+  </div>
+  <div class="ending-attr">—— 简·奥斯汀《傲慢与偏见》</div>
+  <div class="ending-download">
+    <a href="傲慢与偏见.pptx" download>
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      下载 PPT
+    </a>
+  </div>
+</section>
+
+<script>
+/* ===== PARTICLES ===== */
+function createParticles(containerId, count, sizeRange, durationRange) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = containerId === 'openingParticles' ? 'particle' : 'ending-particle';
+    const size = sizeRange[0] + Math.random() * (sizeRange[1] - sizeRange[0]);
+    const dur = durationRange[0] + Math.random() * (durationRange[1] - durationRange[0]);
+    const delay = Math.random() * dur;
+    p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${dur}s;animation-delay:-${delay}s;`;
+    container.appendChild(p);
+  }
+}
+createParticles('openingParticles', 15, [2, 6], [8, 16]);
+createParticles('endingParticles', 12, [2, 5], [10, 20]);
+
+/* ===== PROGRESS & SCROLL ===== */
+const progress = document.getElementById('progress');
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.fade-up, .stagger-item').forEach(el => fadeObserver.observe(el));
+
+/* Stagger delay for grid items */
+document.querySelectorAll('.life-grid .stagger-item, .questions .stagger-item').forEach((el, i) => {
+  el.style.transitionDelay = (i * 0.12) + 's';
+});
+
+/* ===== VOICE CARD FLIP ===== */
+function getFrontCard() {
+  return document.querySelector('.voice-card.front');
+}
+
+function flipVoiceCard(targetName) {
+  const cards = document.querySelectorAll('.voice-card');
+  cards.forEach(card => {
+    const isTarget = card.id === 'voice-' + targetName;
+    card.classList.toggle('front', isTarget);
+    card.classList.toggle('back', !isTarget);
+  });
+  updateStackHeight();
+}
+
+function updateStackHeight() {
+  const container = document.getElementById('voice-cards');
+  if (!container) return;
+  let maxH = 0;
+  document.querySelectorAll('.voice-card').forEach(card => {
+    const h = card.offsetHeight;
+    if (h > maxH) maxH = h;
+  });
+  if (maxH > 0) container.style.minHeight = maxH + 'px';
+}
+
+const voiceStack = document.getElementById('voice-stack');
+if (voiceStack) {
+  voiceStack.addEventListener('click', (e) => {
+    if (e.target.closest('a, button, input, textarea, select')) return;
+    const front = getFrontCard();
+    if (!front) return;
+    const next = front.id === 'voice-darcy' ? 'elizabeth' : 'darcy';
+    flipVoiceCard(next);
+  });
+  setTimeout(updateStackHeight, 100);
+  window.addEventListener('resize', updateStackHeight);
+}
+
+/* ===== NAV DOTS & TOP NAV ===== */
+const chapters = document.querySelectorAll('.chapter[id]');
+const dots = document.querySelectorAll('.chapter-dot');
+const topNav = document.getElementById('topNav');
+const topLinks = topNav ? topNav.querySelectorAll('a') : [];
+const opening = document.querySelector('.opening');
+
+dots.forEach(dot => {
+  dot.addEventListener('click', () => {
+    const target = dot.dataset.target;
+    if (target === 'voice-stack' && voiceStack) {
+      voiceStack.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      const el = document.getElementById(target);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+topLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = link.dataset.target;
+    if (target === 'voice-stack' && voiceStack) {
+      voiceStack.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      const el = document.getElementById(target);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  progress.style.width = (window.scrollY / h * 100) + '%';
+
+  if (topNav) {
+    const showAfter = opening ? opening.offsetHeight - 100 : window.innerHeight;
+    topNav.classList.toggle('visible', window.scrollY > showAfter);
+  }
+
+  let current = '';
+  chapters.forEach(ch => {
+    if (window.scrollY >= ch.offsetTop - 200) current = ch.id;
+  });
+  if (voiceStack && window.scrollY >= voiceStack.offsetTop - 200) {
+    if (window.scrollY < voiceStack.offsetTop + voiceStack.offsetHeight - 200) {
+      current = 'voice-stack';
+    }
+  }
+  dots.forEach(dot => {
+    dot.classList.toggle('active', dot.dataset.target === current);
+  });
+  topLinks.forEach(link => {
+    link.classList.toggle('active', link.dataset.target === current);
+  });
+}, { passive: true });
+
+const glowConfigs = {
+  '.life-card': { glowClass: 'life-card-glow', isDark: false, rx: 10 },
+  '.scene': { glowClass: 'scene-glow', isDark: false, rx: 12 },
+  '.dual-face': { glowClass: 'dual-glow', isDark: true, rx: 8 },
+  '.voice': { glowClass: 'voice-glow', isDark: true, rx: 10 },
+  '.reflection': { glowClass: 'life-card-glow', isDark: true, rx: 10, fixedHeight: 280 },
+  '.q-item': { glowClass: 'q-glow', isDark: false, rx: 0 }
+};
+
+Object.entries(glowConfigs).forEach(([selector, config]) => {
+  document.querySelectorAll(selector).forEach((card, idx) => {
+    const w = card.offsetWidth;
+    const h = config.fixedHeight || card.offsetHeight;
+    const rx = config.rx;
+    const perimeter = 2 * (w - 2 * rx) + 2 * (h - 2 * rx) + 2 * Math.PI * rx;
+
+    const numLayers = 20;
+    const maxDashLen = Math.floor(perimeter * 0.35);
+    const minDashLen = Math.floor(perimeter * 0.15);
+    const minWidth = config.isDark ? 0.5 : 0.25;
+    const maxWidth = config.isDark ? 1.5 : 0.5;
+
+    // Light cards: blue glow; Dark cards: bright white-blue glow
+    const startColor = config.isDark
+      ? { r: 230, g: 240, b: 255 }
+      : { r: 208, g: 224, b: 255 };
+    const endColor = config.isDark
+      ? { r: 80, g: 160, b: 255 }
+      : { r: 42, g: 93, b: 200 };
+
+    const duration = 6500;
+    const breathDuration = 3000;
+    const phaseOffset = idx * 2500;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add(config.glowClass);
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.style.opacity = '0';
+    svg.style.transition = 'opacity 0.6s ease';
+
+    const layers = [];
+    for (let i = 0; i < numLayers; i++) {
+      const t = i / (numLayers - 1);
+      const dashLen = Math.floor(maxDashLen - t * (maxDashLen - minDashLen));
+      const gapLen = perimeter - dashLen;
+      const centerOffset = (maxDashLen - dashLen) / 2;
+      const strokeWidth = minWidth + t * (maxWidth - minWidth);
+
+      const r = Math.floor(startColor.r - t * (startColor.r - endColor.r));
+      const g = Math.floor(startColor.g - t * (startColor.g - endColor.g));
+      const b = Math.floor(startColor.b - t * (startColor.b - endColor.b));
+      const color = `rgb(${r}, ${g}, ${b})`;
+
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', '1');
+      rect.setAttribute('y', '1');
+      rect.setAttribute('width', w - 2);
+      rect.setAttribute('height', h - 2);
+      rect.setAttribute('rx', rx);
+      rect.setAttribute('fill', 'none');
+      rect.setAttribute('stroke', color);
+      rect.setAttribute('stroke-width', strokeWidth);
+      rect.setAttribute('stroke-dasharray', `${dashLen} ${gapLen}`);
+      rect.setAttribute('stroke-linecap', 'round');
+      rect.setAttribute('opacity', '0.85');
+      rect.style.filter = `blur(${t * 3}px)`;
+
+      svg.appendChild(rect);
+      layers.push({ rect, centerOffset });
+    }
+
+    card.appendChild(svg);
+
+    let animId = null;
+    let start = null;
+
+    function step(ts) {
+      if (!start) start = ts;
+      const elapsed = ts - start;
+
+      const moveElapsed = (elapsed + phaseOffset) % duration;
+      const offset = -(moveElapsed / duration) * perimeter;
+
+      const breathPhase = (elapsed % breathDuration) / breathDuration;
+      const breathFactor = 0.8 + 0.4 * Math.sin(breathPhase * Math.PI * 2);
+      const breathOpacity = 0.55 + 0.35 * Math.sin(breathPhase * Math.PI * 2);
+
+      layers.forEach((layer, i) => {
+        const t = i / (numLayers - 1);
+        const baseWidth = minWidth + t * (maxWidth - minWidth);
+        const animatedWidth = baseWidth * breathFactor;
+        layer.rect.setAttribute('stroke-dashoffset', offset - layer.centerOffset);
+        layer.rect.setAttribute('stroke-width', animatedWidth);
+      });
+
+      svg.style.opacity = breathOpacity.toString();
+
+      animId = requestAnimationFrame(step);
+    }
+
+    card.addEventListener('mouseenter', () => {
+      svg.style.opacity = '0.65';
+      if (!animId) {
+        start = null;
+        animId = requestAnimationFrame(step);
+      }
+    });
+
+    card.addEventListener('mouseleave', () => {
+      svg.style.opacity = '0';
+      if (animId) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
