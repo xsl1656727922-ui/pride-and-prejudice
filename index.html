@@ -741,6 +741,14 @@ body {
 }
 .stagger-item.visible { opacity: 1; transform: translateY(0); }
 
+/* ===== TABLET ===== */
+@media (max-width: 1024px) {
+  .dual { grid-template-columns: 1fr; margin: 3rem 0; }
+  .visual-break img, .chapter-atmos img {
+    mask-image: none; -webkit-mask-image: none;
+  }
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   body { font-size: 16px; }
